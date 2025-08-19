@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"catai"
+	"catai/sytem"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,7 +26,7 @@ type Prompt struct {
 }
 
 func NewComfyUI(db *gorm.DB) *Prompt {
-	config := &Config{}
+	config := &Config{Value: sytem.Comfyui}
 	db.Where("Key = ?", "ComfyUI").Take(config)
 	prompt := &Prompt{
 		Cat: catai.NewChat(""),

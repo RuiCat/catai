@@ -2,6 +2,7 @@ package main
 
 import (
 	"catai"
+	"catai/sytem"
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
@@ -62,11 +63,11 @@ func NewCat(db *gorm.DB) *Cat {
 					"上衣": "", "下衣": "",
 					"内衣": "", "内裤": "",
 					"胸罩": "", "鞋子": "",
-					"袜子": "", "装饰物": "正常"},
+					"袜子": "", "装饰物": ""},
 				"身体": {
 					"头": "", "脸": "", "眼": "", "鼻": "", "嘴": "", "舌头": "", "耳朵": "", "头发": "", "胳膊": "", "手": "",
-					"胸": "", "腰": "", "肚子": "", "尾巴": "", "小穴": "", "屁股": "", "子宫": "", "阴道": "", "尿道": "", "膀胱": "",
-					"输卵管": "", "卵巢": "", "肛门": "", "大腿": "", "小腿": "", "脚": "", "后背": "", "锁骨": "", "脉搏": "", "腋窝": "", "阴唇": "", "宫颈口(子宫口)": ""},
+					"胸": "", "腰": "", "肚子": "", "尾巴": "", "小穴": "", "屁股": "", "子宫": "", "阴道": "", "尿道": "", "膀胱": "", "肠道": "", "胃": "",
+					"输卵管": "", "卵巢": "", "肛门": "", "大腿": "", "小腿": "", "脚": "", "后背": "", "锁骨": "", "脉搏": "", "腋窝": "", "阴唇": "", "宫颈口(子宫口)": "", "生命状态": ""},
 				"数值状态": {"好感度": "?/100", "体力": "?/100", "敏捷": "?/100", "智力": "?/100", "魅力": "?/100", "性欲": "?/100"},
 			},
 			Message: &catai.Message{MessageData: catai.MessageData{Role: "assistant"}},
@@ -74,7 +75,7 @@ func NewCat(db *gorm.DB) *Cat {
 	// 初始化主聊天处理器
 	cat.CatChat = catai.NewChat("")
 	// 设置默认猫娘提示词
-	config := &Config{}
+	config := &Config{Value: sytem.Cat}
 	db.Where("Key = ?", "SystemCat").Take(config)
 	cat.CatChat.ChatSystem(config.Value) // 默认猫娘提示词
 	cat.CatState.System = config.Value
@@ -83,7 +84,7 @@ func NewCat(db *gorm.DB) *Cat {
 	cat.CatState.Message.MessageData.Content = string(data)
 	// 初始化提取处理器，用于将回答转化为事件
 	cat.CatChatExtract = catai.NewChat("") // 将猫娘回答转化为事件
-	config = &Config{}
+	config = &Config{Value: sytem.Extract}
 	db.Where("Key = ?", "SystemExtract").Take(config)
 	cat.CatChatExtract.ChatSystem(config.Value)
 	cat.CatChatExtract.IsSingleInvocation = true

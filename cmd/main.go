@@ -47,6 +47,9 @@ func main() {
 			r := &CatResponse{}
 			// 调用猫娘聊天方法处理输入
 			l, err := cat.Chat(str, r)
+			if l == nil || len(l.Choices) == 0 {
+				panic("无法读取数据")
+			}
 			if err != nil {
 				fmt.Println("错误:", err)
 				cat.CatChat.Messages = cat.CatChat.Messages[:len(cat.CatChat.Messages)-1]

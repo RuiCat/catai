@@ -17,7 +17,7 @@ func Init() *gorm.DB {
 	db.AutoMigrate(&Config{})
 	config := &Config{}
 	db.Where("Key = ?", "Key").Take(config)
-	catai.Key = config.Value
+	catai.ApiKey = config.Value
 	return db
 }
 

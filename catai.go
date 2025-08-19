@@ -10,7 +10,8 @@ import (
 )
 
 // 默认密匙
-var Key = ""
+var ApiKey = ""
+var BaseURL = "https://api.siliconflow.cn/v1/chat/completions"
 
 // Message 表示完整的消息对象，包含原始数据和序列化后的字节
 // MessageData: 消息内容
@@ -144,13 +145,19 @@ func (messages *Chat) Chat(call func(MessageData) MessageData) (*ChatReturn, err
 		return nil, err
 	}
 	// 开始通信
-
-	// data, _ := io.ReadAll(messages.Buffer.Get())
-	// fmt.Println(string(data))
-
+	{
+		// 调试用
+		// data, _ := io.ReadAll(messages.Buffer.Get())
+		// fmt.Println(string(data))
+	}
 	body, err := ChatPost(messages.Buffer.Get())
 	if err != nil {
 		return nil, err
+	}
+	{
+		// 调试用
+		// data, _ := io.ReadAll(body.Body)
+		// fmt.Println(string(data))
 	}
 	// 处理获取的内容
 	chat := &ChatReturn{}
@@ -176,12 +183,12 @@ func (messages *Chat) Chat(call func(MessageData) MessageData) (*ChatReturn, err
 
 // ChatPost 发送数据
 func ChatPost(body io.Reader) (*http.Response, error) {
-	req, err := http.NewRequest("POST", "https://api.siliconflow.cn/v1/chat/completions", body)
+	req, err := http.NewRequest("POST", BaseURL, body)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("content-type", "application/json")
-	req.Header.Set("authorization", Key)
+	req.Header.Set("authorization", ApiKey)
 	req.Header.Set("accept", "application/json")
 	res, err := (&http.Client{}).Do(req)
 	if err != nil {
