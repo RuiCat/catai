@@ -2,6 +2,7 @@
 package main
 
 import (
+	"catai/sytem"
 	"fmt"
 	"image"
 	"image/color"
@@ -44,7 +45,7 @@ func main() {
 	go func() {
 		for str := range callChat {
 			// 创建响应对象
-			r := &CatResponse{}
+			r := &sytem.CatResponse{}
 			// 调用猫娘聊天方法处理输入
 			l, err := cat.Chat(str, r)
 			if l == nil || len(l.Choices) == 0 {
