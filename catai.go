@@ -11,7 +11,8 @@ import (
 
 // 默认密匙
 var ApiKey = ""
-var BaseURL = "https://api.siliconflow.cn/v1/chat/completions"
+var BaseURL = ""
+var BaseModel = ""
 
 // Message 表示完整的消息对象，包含原始数据和序列化后的字节
 // MessageData: 消息内容
@@ -49,7 +50,10 @@ type ChatReturn struct {
 
 // String 格式和输出
 func (chat *ChatReturn) String() (str string) {
-	return chat.Choices[0].Message.String()
+	if len(chat.Choices) > 0 {
+		return chat.Choices[0].Message.String()
+	}
+	return fmt.Sprintf("%v\n", chat.Choices)
 }
 
 // ChatChoice 表示API返回的单个消息选择
@@ -85,7 +89,7 @@ type Chat struct {
 // NewChat 初始化
 func NewChat(model string) (cat *Chat) {
 	if model == "" {
-		model = "deepseek-ai/DeepSeek-V3"
+		model = BaseModel
 	}
 	// 构建
 	cat = &Chat{Messages: []*Message{}, Buffer: make(Buffer, 5)}
@@ -187,9 +191,8 @@ func ChatPost(body io.Reader) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("content-type", "application/json")
-	req.Header.Set("authorization", ApiKey)
-	req.Header.Set("accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", ApiKey)
 	res, err := (&http.Client{}).Do(req)
 	if err != nil {
 		return nil, err

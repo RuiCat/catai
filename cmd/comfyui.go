@@ -60,9 +60,6 @@ func NewComfyUI(db *gorm.DB) *Prompt {
 
 // Chat 解析
 func (prompt *Prompt) Chat(cat *Cat, str string) (images []string, err error) {
-	if !cat.IsComfyUI {
-		return nil, nil
-	}
 	state, _ := json.Marshal(cat.CatState)
 	prompt.Cat.Messages[2].Content = fmt.Sprintf("历史提示词\n```\nPrompt:%s\nNegativePrompt:%s\n```\n", prompt.Prompt, prompt.NegativePrompt)
 	prompt.Cat.Messages[3].Content = fmt.Sprintf("人设信息:\n'''\n%s\n'''\n人物状态:\n'''\n%s\n'''\n对话内容:\n'''\n%s\n'''\n", cat.CatState.System, string(state), str)

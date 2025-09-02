@@ -3,6 +3,7 @@ package catai
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -50,15 +51,21 @@ func (data *MessageData) Json(r any, v ...any) (err error) {
 	}
 	for i := 0; i < 5; i++ {
 		// 发送修复请求
-		r, _ := jsonChat.ChatUser(fmt.Sprintf("回答内容:\n'''\n%s\n'''\n错误信息:\n'''\n%s\n'''\n", jsonData, err))
-		// 重新尝试
-		repaired, err = jsonrepair.JSONRepair(GetBetweenStr(r.Choices[0].Message.Content, "```json", "```"))
-		if err == nil {
-			err = json.NewDecoder(bytes.NewBufferString(repaired)).Decode(r)
-			// 修复完成
-			if err == nil {
-				return err
+		r, er := jsonChat.ChatUser(fmt.Sprintf("回答内容:\n'''\n%s\n'''\n错误信息:\n'''\n%s\n'''\n", jsonData, err))
+		if er != nil {
+			// 重新尝试
+			repaired, er = jsonrepair.JSONRepair(GetBetweenStr(r.Choices[0].Message.Content, "```json", "```"))
+			if er == nil {
+				er = json.NewDecoder(bytes.NewBufferString(repaired)).Decode(r)
+				// 修复完成
+				if er == nil {
+					return er
+				}
+			} else {
+				err = errors.Join(err, er)
 			}
+		} else {
+			err = errors.Join(err, er)
 		}
 	}
 	return err

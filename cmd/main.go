@@ -2,6 +2,7 @@
 package main
 
 import (
+	"catai"
 	"catai/sytem"
 	"fmt"
 	"image"
@@ -20,6 +21,7 @@ import (
 )
 
 func main() {
+	fmt.Println(catai.BaseURL)
 	// 创建app
 	window := new(app.Window)
 	// 创建猫娘实例
@@ -48,14 +50,19 @@ func main() {
 			r := &sytem.CatResponse{}
 			// 调用猫娘聊天方法处理输入
 			l, err := cat.Chat(str, r)
-			if l == nil || len(l.Choices) == 0 {
-				panic("无法读取数据")
-			}
 			if err != nil {
 				fmt.Println("错误:", err)
-				cat.CatChat.Messages = cat.CatChat.Messages[:len(cat.CatChat.Messages)-1]
-				r.Answer = l.Choices[0].Message.Content
+				if cat != nil && len(cat.CatChat.Messages) > 1 {
+					cat.CatChat.Messages = cat.CatChat.Messages[:len(cat.CatChat.Messages)-1]
+					editor.CatEditor.SetText("异常数据")
+					continue
+				}
 			} else {
+				if l == nil || len(l.Choices) == 0 {
+					cat.CatChat.Messages = cat.CatChat.Messages[:len(cat.CatChat.Messages)-1]
+					editor.CatEditor.SetText("异常数据")
+					continue
+				}
 				// 记录当前回答
 				editor.AttributeEditor.SetText(cat.CatState.String())
 				// 回答
@@ -63,22 +70,25 @@ func main() {
 			}
 			// 处理对话
 			editor.CatEditor.SetText(r.Answer)
-			// 处理绘画
-			images, err := prompt.Chat(cat, fmt.Sprintf("提问:\n```\n%s\n```\n回答:\n```\n%s\n```\n", str, l.Choices[0].Message.Content))
-			if err != nil {
-				fmt.Println("错误:", err)
-			}
-			if len(images) > 0 {
-				res, err := http.Get(images[0])
+			if cat.IsComfyUI {
+				// 处理绘画
+				images, err := prompt.Chat(cat, fmt.Sprintf("提问:\n```\n%s\n```\n回答:\n```\n%s\n```\n", str, l.Choices[0].Message.Content))
 				if err != nil {
-					fmt.Println(err)
+					fmt.Println("错误:", err)
 				}
-				img, _, err := image.Decode(res.Body)
-				if err != nil {
-					fmt.Println(err)
+				if len(images) > 0 {
+					res, err := http.Get(images[0])
+					if err != nil {
+						fmt.Println(err)
+					}
+					img, _, err := image.Decode(res.Body)
+					if err != nil {
+						fmt.Println(err)
+					}
+					editor.ImgOp = paint.NewImageOp(img)
+					res.Body.Close()
 				}
-				editor.ImgOp = paint.NewImageOp(img)
-				res.Body.Close()
+
 			}
 		}
 	}()

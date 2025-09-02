@@ -18,6 +18,12 @@ func Init() *gorm.DB {
 	config := &Config{}
 	db.Where("Key = ?", "Key").Take(config)
 	catai.ApiKey = config.Value
+	config = &Config{}
+	db.Where("Key = ?", "Model").Take(config)
+	catai.BaseModel = config.Value
+	config = &Config{}
+	db.Where("Key = ?", "URL").Take(config)
+	catai.BaseURL = config.Value
 	return db
 }
 

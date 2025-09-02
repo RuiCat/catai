@@ -1,0 +1,64 @@
+package config
+
+import (
+	"os"
+	"os/signal"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+// ConfigType 配置项
+type ConfigType struct {
+	Key   string `gorm:"primaryKey;type:text"`
+	Value string `gorm:"type:text"`
+}
+
+// ConfigList 配置列表
+var ConfigList map[string]string = map[string]string{}
+
+// Quit 退出
+var Quit chan os.Signal = make(chan os.Signal, 1)
+
+func init() {
+	// 打开SQLite数据库连接
+	db, err := gorm.Open(sqlite.Open("Config.db"), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	// 读取配置
+	var configList []ConfigType
+	config := db.Table("configs")
+	config.Find(&configList)
+	for _, v := range configList {
+		ConfigList[v.Key] = v.Value
+	}
+	signal.Notify(Quit)
+	// 关闭更新
+	go func() {
+		<-Quit
+		// 处理写入
+		configList = configList[:0]
+		for k, v := range ConfigList {
+			configList = append(configList, ConfigType{Key: k, Value: v})
+		}
+		config.Save(configList)
+		// 使应用程序正常退出
+		os.Exit(0)
+	}()
+}
+
+// Close 关闭并写出配置
+func Close() {
+	Quit <- nil
+	<-make(chan struct{})
+}
+
+// Get 得到配置项
+func Get(key string, Value string) string {
+	if v, ok := ConfigList[key]; ok {
+		return v
+	}
+	ConfigList[key] = Value
+	return Value
+}

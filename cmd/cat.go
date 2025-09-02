@@ -45,7 +45,7 @@ func NewCat(db *gorm.DB) *Cat {
 			Message: &catai.Message{MessageData: catai.MessageData{Role: "assistant"}},
 		}}
 	// 初始化主聊天处理器
-	cat.CatChat = catai.NewChat("Qwen/Qwen3-235B-A22B-Instruct-2507")
+	cat.CatChat = catai.NewChat("")
 	// 设置默认猫娘提示词
 	config := &Config{Value: sytem.Cat}
 	db.Where("Key = ?", "SystemCat").Take(config)
