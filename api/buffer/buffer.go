@@ -1,4 +1,4 @@
-package catai
+package buffer
 
 import (
 	"bytes"
@@ -62,26 +62,49 @@ func (buf Buffer) ReadJson(i int, v any) error {
 //  2. 当所有缓冲区读取完毕时返回io.EOF
 //  3. 内部使用bufferCall类型实现连续读取
 func (buf *Buffer) Get() io.Reader {
-	var i, n int // i-当前缓冲区索引, n-当前缓冲区已读取位置
+	var i, x, y, z int
 	return (bufferCall)(func(p []byte) (int, error) {
-		// 检查缓冲区是否为空
-		if len(*buf) == 0 {
+		// 输入判断
+		if len(p) == 0 || len(*buf) == i {
 			return 0, io.EOF
 		}
-		// 从当前缓冲区拷贝数据
-		ptr := (*buf)[i]
-		l := copy(p, (*ptr)[n:]) // 拷贝数据到p
-		n += l                   // 更新已读取位置
-
-		// 检查是否读完当前缓冲区
-		if n >= len((*ptr)) {
-			n = 0 // 重置位置
-			i++   // 移动到下一个缓冲区
-			// 检查是否所有缓冲区都已读完
+		// 读取当前内容到结束
+		for x = 0; ; {
+			// 读取
+			ptr := (*buf)[i]
+			z = copy(p[x:], (*ptr)[y:])
+			// 记录读取的长度
+			x, y = x+z, y+z
+			if x >= len(p) {
+				// 缓冲区用完
+				break
+			}
+			if y >= len(*ptr) {
+				// 当前切片读取完成
+				i++   // 下一个切片
+				y = 0 // 新读取位置
+			}
 			if i >= len(*buf) {
-				return l, io.EOF
+				break // 内容读取完成
 			}
 		}
-		return l, nil // 返回实际读取的字节数
+		return x, nil
 	})
+}
+
+// AddDyte 添加数据
+func (buf *Buffer) AddDyte(data []byte) {
+	*buf = append(*buf, &data)
+}
+
+// AddString 添加数据
+func (buf *Buffer) AddString(data string) {
+	ptr := new([]byte)
+	*ptr = []byte(data)
+	*buf = append(*buf, ptr)
+}
+
+// AddPtr 添加数据
+func (buf *Buffer) AddPtr(ptr *[]byte) {
+	*buf = append(*buf, ptr)
 }

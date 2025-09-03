@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -33,7 +35,8 @@ func init() {
 	for _, v := range configList {
 		ConfigList[v.Key] = v.Value
 	}
-	signal.Notify(Quit)
+	// 拦截信号
+	signal.Notify(Quit, syscall.SIGABRT, syscall.SIGALRM, syscall.SIGBUS, syscall.SIGCHLD, syscall.SIGCONT, syscall.SIGFPE, syscall.SIGHUP, syscall.SIGILL, syscall.SIGINT, syscall.SIGKILL, syscall.SIGPIPE, syscall.SIGPOLL, syscall.SIGPROF, syscall.SIGPWR, syscall.SIGQUIT, syscall.SIGSEGV, syscall.SIGSTKFLT, syscall.SIGSTOP, syscall.SIGTERM, syscall.SIGTRAP, syscall.SIGTSTP, syscall.SIGTTIN, syscall.SIGTTOU, syscall.SIGUNUSED, syscall.SIGUSR1, syscall.SIGUSR2, syscall.SIGVTALRM, syscall.SIGWINCH, syscall.SIGXCPU, syscall.SIGXFSZ)
 	// 关闭更新
 	go func() {
 		<-Quit
@@ -58,6 +61,9 @@ func Close() {
 func Get(key string, Value string) string {
 	if v, ok := ConfigList[key]; ok {
 		return v
+	}
+	if Value == "" {
+		panic(fmt.Errorf("配置项 %s 默认值不存在", key))
 	}
 	ConfigList[key] = Value
 	return Value

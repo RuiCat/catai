@@ -7,7 +7,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/kaptinlin/jsonrepair v0.2.1
-	golang.org/x/text v0.20.0
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.1
 )
@@ -22,4 +21,5 @@ require (
 	golang.org/x/exp/shiny v0.0.0-20240707233637-46b078467d37 // indirect
 	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
 )
