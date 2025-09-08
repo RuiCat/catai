@@ -12,6 +12,11 @@ type Tool struct {
 	Function Function `json:"function"`
 }
 
+// GetName gg工具名称
+func (tool *Tool) GetName() string {
+	return tool.Function.Name
+}
+
 // Update 更新缓冲
 func (tool *Tool) Update() error {
 	buffer := bytes.NewBuffer(tool.data)
@@ -25,15 +30,16 @@ func (tool *Tool) Update() error {
 
 // Function 函数信息
 type Function struct {
-	Name         string        `json:"name"`         // 函数名
-	Args         []FunctionArg `json:"args"`         // 参数
-	Return       []FunctionArg `json:"return"`       // 输出
-	Introduction string        `json:"introduction"` // 介绍
+	Name        string                                               `json:"name"`        // 工具名
+	Parameters  []FunctionParameter                                  `json:"parameters"`  // 工具参数
+	Description string                                               `json:"description"` // 工具描述
+	Call        func(mes *Messages, tool *Tool, args map[string]any) `json:"-"`           // 回调
+	CallUpdate  func(ret *ChatRet)                                   `json:"-"`           // 回调
 }
 
-// FunctionArg 函数参数
-type FunctionArg struct {
-	Name         string `json:"name"`         // 参数
-	Type         string `json:"type"`         // 参数类型
-	Introduction string `json:"introduction"` // 介绍
+// FunctionParameter 函数参数
+type FunctionParameter struct {
+	Type       string            `json:"type"`       // 类型
+	Properties map[string]string `json:"properties"` // 参数描述
+	Required   []string          `json:"required"`   // 必填项
 }

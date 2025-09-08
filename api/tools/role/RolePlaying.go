@@ -14,3 +14,9 @@ type RolePlaying struct {
 	ShortTermMemory     string            `json:"ShortTermMemory"`     // 短期记忆
 	LongTermMemoryIndex string            `json:"LongTermMemoryIndex"` // 长期记忆
 }
+
+// Bind 绑定
+func (role *RolePlaying) Bind() {
+	mes := role.Chat.GetMessages()
+	mes.AddTool(chat.Function{})
+}
