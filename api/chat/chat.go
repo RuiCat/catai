@@ -3,7 +3,6 @@ package chat
 import (
 	"catai/api/config"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 )
@@ -66,21 +65,27 @@ func ChatPost(mes MessagesFace) (ret ChatRet, _ error) {
 			call := (ChatRet)(a.(map[string]any))
 			name, ok := call.Get("function", "name")
 			if !ok {
-				fmt.Println("???", a)
 				break
 			}
 			arguments, ok := call.Get("function", "arguments")
 			if !ok {
-				fmt.Println("???", a)
 				break
 			}
 			val := map[string]any{}
-			if json.Unmarshal([]byte(arguments.(string)), &val) != nil {
-				fmt.Println("???!!!", a)
-				break
+			switch arg := arguments.(type) {
+			case string:
+				if json.Unmarshal([]byte(arg), &val) != nil {
+					ok = false
+				}
+			case map[string]any:
+				val = arg
+			default:
+				ok = false
 			}
-			if i, ok := mess.ToolsMap[name.(string)]; ok && mess.Tools[i].Function.Call != nil {
-				mess.Tools[i].Function.Call(mess, mess.Tools[i], val)
+			if ok {
+				if i, ok := mess.ToolsMap[name.(string)]; ok && mess.Tools[i].Function.Call != nil {
+					mess.Tools[i].Function.Call(mess, mess.Tools[i], val)
+				}
 			}
 		}
 	}
