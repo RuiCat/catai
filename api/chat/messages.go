@@ -11,14 +11,14 @@ import (
 
 // Messages 上下文
 type Messages struct {
-	Buffer   buffer.Buffer
-	Model    string
-	User     *Data
-	Tools    []*Tool
-	Datas    []*Data
-	System   *Data
-	IsJson   bool
-	ToolsMap map[string]int
+	Buffer   buffer.Buffer  `json:"-"`
+	Model    string         `json:"-"`
+	User     *Data          `json:"-"`
+	Tools    []*Tool        `json:"-"`
+	Datas    []*Data        `json:"-"`
+	System   *Data          `json:"-"`
+	IsJson   bool           `json:"-"`
+	ToolsMap map[string]int `json:"-"`
 }
 
 // NewMessages 创建

@@ -7,10 +7,10 @@ import (
 
 // Information 信息工具
 type Information struct {
-	Name     string                       // 信息状态
-	Mess     *chat.Data                   // 绑定对话
-	Value    map[string]map[string]string // 信息值
-	IsUpdate bool                         // 需要更新
+	Name     string                       `json:"Name"`  // 信息状态
+	Mess     *chat.Data                   `json:"-"`     // 绑定对话
+	Value    map[string]map[string]string `json:"Value"` // 信息值
+	IsUpdate bool                         `json:"-"`     // 需要更新
 }
 
 // NewInformation创建一个信息块
