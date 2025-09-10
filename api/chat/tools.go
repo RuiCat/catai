@@ -8,6 +8,7 @@ import (
 // Tool 工具定义
 type Tool struct {
 	data     []byte   `json:"-"` // 缓存数据
+	Enable   bool     `json:"-"` // 缓存数据
 	Type     string   `json:"type"`
 	Function Function `json:"function"`
 }
@@ -31,15 +32,26 @@ func (tool *Tool) Update() error {
 // Function 函数信息
 type Function struct {
 	Name        string                                               `json:"name"`        // 工具名
-	Parameters  []FunctionParameter                                  `json:"parameters"`  // 工具参数
+	Parameters  []Parameter                                          `json:"parameters"`  // 工具参数
 	Description string                                               `json:"description"` // 工具描述
 	Call        func(mes *Messages, tool *Tool, args map[string]any) `json:"-"`           // 回调
 	CallUpdate  func(ret *ChatRet)                                   `json:"-"`           // 回调
 }
 
-// FunctionParameter 函数参数
-type FunctionParameter struct {
-	Type       string            `json:"type"`       // 类型
-	Properties map[string]string `json:"properties"` // 参数描述
-	Required   []string          `json:"required"`   // 必填项
+// Parameter 函数参数
+type Parameter struct {
+	Type       string              `json:"type"`       // 类型
+	Properties map[string]Location `json:"properties"` // 参数描述
+	Required   []string            `json:"required"`   // 必填项
+}
+
+// Location 参数
+type Location struct {
+	Type       string `json:"type"`       // 类型
+	Properties string `json:"properties"` // 参数描述
+}
+
+// NewLocation 初始化
+func NewLocation(Type, Properties string) Location {
+	return Location{Type: Type, Properties: Properties}
 }

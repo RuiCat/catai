@@ -70,6 +70,18 @@ func (mes *Messages) AddMessage(role string, content string) error {
 	return nil
 }
 
+// AddDialogue 添加对话
+func (mes *Messages) AddDialogue(assistant string, user string) error {
+	if err := mes.AddMessage("assistant", assistant); err != nil {
+		return err
+	}
+	if err := mes.AddMessage("user", user); err != nil {
+		mes.Datas = mes.Datas[:len(mes.Datas)-1]
+		return err
+	}
+	return nil
+}
+
 // SetUser 设置提问不添加到上下文
 func (mes *Messages) SetUser(content string) error {
 	mes.User.Content = content
@@ -81,7 +93,7 @@ func (mes *Messages) AddTool(function Function) error {
 	if _, ok := mes.ToolsMap[function.Name]; ok {
 		return fmt.Errorf("重复工具定义: %s", function.Name)
 	}
-	tool := &Tool{Type: "function", Function: function}
+	tool := &Tool{Type: "function", Enable: true, Function: function}
 	if err := tool.Update(); err != nil {
 		return err
 	}
@@ -128,6 +140,9 @@ func (mes *Messages) Get() io.Reader {
 	if n := len(mes.Tools) - 1; n >= 0 {
 		mes.Buffer.AddDyte([]byte(`,"tools":[`))
 		for i := 0; ; i++ {
+			if !mes.Tools[i].Enable {
+				continue
+			}
 			mes.Buffer.AddPtr(&mes.Tools[i].data)
 			if i < n {
 				mes.Buffer.AddDyte([]byte(`,`))
