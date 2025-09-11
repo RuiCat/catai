@@ -53,7 +53,6 @@ func (task *TaskList) AddTool(function chat.Function) error {
 
 // Call 回调
 func (task *TaskList) Call(mes *chat.Messages, tool *chat.Tool, args map[string]any) {
-	fmt.Println(tool.GetName(), args)
 	if tool.GetName() == task.Name {
 
 	} else if call := task.Tools[tool.GetName()].Call; call != nil {

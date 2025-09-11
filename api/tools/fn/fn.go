@@ -86,3 +86,9 @@ func Call(fn chat.Function, call func(mes *chat.Messages, tool *chat.Tool, args 
 	fn.Call.Call = call
 	return fn
 }
+
+// CallUpdate 绑定回调
+func CallUpdate(fn chat.Function, callUpdate func(tool *chat.Tool, ret *chat.ChatRet)) chat.Function {
+	fn.Call.CallUpdate = callUpdate
+	return fn
+}
