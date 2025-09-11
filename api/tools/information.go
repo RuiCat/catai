@@ -89,15 +89,15 @@ func (infor *Information) Bind(mess chat.MessagesFace) {
 
 // Update 更新
 func (infor *Information) Update() error {
-	infor.Mess.Content = fmt.Sprintf("[ 数据块: %s ]\n", infor.Name)
+	infor.Mess.Content = fmt.Sprintf("[ %s ]\n", infor.Name)
 	for key, v := range infor.Value {
 		infor.Mess.Content += "分类: " + key + "\n"
 		if _, ok := v[""]; ok {
-			infor.Mess.Content += "  参考:\n	" + v[""] + "\n"
+			infor.Mess.Content += "@格式参考:\n " + v[""] + "\n"
 		}
 		for k, s := range v {
 			if k != "" {
-				infor.Mess.Content += "  " + k + ":" + s + "\n"
+				infor.Mess.Content += " " + k + ":" + s + "\n"
 			}
 		}
 	}
