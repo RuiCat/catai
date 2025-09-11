@@ -5,9 +5,9 @@ import "catai/api/tools"
 // StatusInformation 状态信息
 func StatusInformation() *tools.Information {
 	tool := tools.NewInformation("状态信息")
-	tool.Value["背包信息"] = map[string]string{"": "实体/素材名称:相关的说明 #每一条信息都是自身背包或者身上的素材或者实体"}
+	tool.Value["背包信息"] = map[string]string{"": "string:object #实体名称:素材或者实体的信息状态"}
 	tool.Value["角色状态"] = map[string]string{
-		"":      "状态:角色当前状态 #在每一次与用户对话中更新相关内容",
+		"":      "string:object #状态:状态值每一次与用户对话中更新相关内容",
 		"能量值":   "int",
 		"饱食度":   "int",
 		"清洁度":   "int",
@@ -60,7 +60,7 @@ func StatusInformation() *tools.Information {
 		"环境适应": "string",
 	}
 	tool.Value["交互状态"] = map[string]string{
-		"": `器官:状态 # 器官名称:{"插入状态": map[string:器官位置]any:{"插入对象": "string","插入深度": "string","组织反应": "string"},"器官变形":map[string:对象]any,"体液分布":map[string:对象]any}`,
+		"": `string:object # 器官名称:器官的当前状态`,
 	}
 	return tool
 }
