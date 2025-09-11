@@ -99,6 +99,9 @@ func ChatPost(mes MessagesFace) (ret ChatRet, _ error) {
 
 // ChatUser 发送数据
 func ChatUser(mes MessagesFace, uesr string) (ret ChatRet, _ error) {
+	defer func() {
+		recover()
+	}()
 	mes.SetUser(uesr)
 	return ChatPost(mes)
 }

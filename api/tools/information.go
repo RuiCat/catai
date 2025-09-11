@@ -91,15 +91,17 @@ func (infor *Information) Bind(mess chat.MessagesFace) {
 func (infor *Information) Update() error {
 	infor.Mess.Content = fmt.Sprintf("[ %s ]\n", infor.Name)
 	for key, v := range infor.Value {
-		infor.Mess.Content += "分类: " + key + "\n"
+		infor.Mess.Content += "分类: " + key
 		if _, ok := v[""]; ok {
-			infor.Mess.Content += "@格式参考:\n " + v[""] + "\n"
+			infor.Mess.Content += " ,格式参考:{" + v[""] + "}"
 		}
+		infor.Mess.Content += "\n{\n"
 		for k, s := range v {
 			if k != "" {
-				infor.Mess.Content += " " + k + ":" + s + "\n"
+				infor.Mess.Content += " " + k + ":" + s + ",\n"
 			}
 		}
+		infor.Mess.Content += "},\n"
 	}
 	return infor.Mess.Update()
 }
