@@ -29,8 +29,8 @@ func NewMessages() *Messages {
 		Tools:    make([]*Tool, 0),
 		ToolsMap: map[string]int{},
 		Datas:    make([]*Data, 0),
-		User:     &Data{Role: "user"},
-		System:   &Data{Role: "system"},
+		User:     &Data{Role: "user", Enable: true},
+		System:   &Data{Role: "system", Enable: true},
 	}
 }
 
@@ -38,6 +38,7 @@ func NewMessages() *Messages {
 type Data struct {
 	data    []byte `json:"-"`       // 缓存数据
 	Role    string `json:"role"`    // 消息发送者角色
+	Enable  bool   `json:"-"`       // 跳过上下文
 	Content string `json:"content"` // 消息的具体内容
 }
 
@@ -56,7 +57,7 @@ func (data *Data) Update() error {
 func (mes *Messages) AddMessage(role string, content string) error {
 	switch role {
 	case "user", "assistant":
-		data := &Data{Role: role, Content: content}
+		data := &Data{Role: role, Enable: true, Content: content}
 		if err := data.Update(); err != nil {
 			return err
 		}
@@ -123,11 +124,13 @@ func (mes *Messages) Get() io.Reader {
 	mes.Buffer.AddPtr(&mes.System.data)
 	mes.Buffer.AddDyte([]byte(`,`))
 	for i, n := 0, len(mes.Datas)-1; ; i++ {
-		mes.Buffer.AddPtr(&mes.Datas[i].data)
-		if i < n {
-			mes.Buffer.AddDyte([]byte(`,`))
-		} else {
-			break
+		if mes.Datas[i].Enable {
+			mes.Buffer.AddPtr(&mes.Datas[i].data)
+			if i < n {
+				mes.Buffer.AddDyte([]byte(`,`))
+			} else {
+				break
+			}
 		}
 	}
 	if mes.User.Content != "" {

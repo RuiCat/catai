@@ -8,12 +8,12 @@ import (
 // Tool 工具定义
 type Tool struct {
 	data     []byte   `json:"-"` // 缓存数据
-	Enable   bool     `json:"-"` // 缓存数据
+	Enable   bool     `json:"-"` // 是否启用
 	Type     string   `json:"type"`
 	Function Function `json:"function"`
 }
 
-// GetName gg工具名称
+// GetName 工具名称
 func (tool *Tool) GetName() string {
 	return tool.Function.Name
 }
@@ -31,11 +31,16 @@ func (tool *Tool) Update() error {
 
 // Function 函数信息
 type Function struct {
-	Name        string                                               `json:"name"`        // 工具名
-	Parameters  []Parameter                                          `json:"parameters"`  // 工具参数
-	Description string                                               `json:"description"` // 工具描述
-	Call        func(mes *Messages, tool *Tool, args map[string]any) `json:"-"`           // 回调
-	CallUpdate  func(ret *ChatRet)                                   `json:"-"`           // 回调
+	Call        `json:"-"`  // 回调
+	Name        string      `json:"name"`        // 工具名
+	Parameters  []Parameter `json:"parameters"`  // 工具参数
+	Description string      `json:"description"` // 工具描述
+}
+
+// Call 工具回调
+type Call struct {
+	Call       func(mes *Messages, tool *Tool, args map[string]any) `json:"-"` // 回调
+	CallUpdate func(tool *Tool, ret *ChatRet)                       `json:"-"` // 回调
 }
 
 // Parameter 函数参数

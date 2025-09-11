@@ -83,15 +83,15 @@ func ChatPost(mes MessagesFace) (ret ChatRet, _ error) {
 				ok = false
 			}
 			if ok {
-				if i, ok := mess.ToolsMap[name.(string)]; ok && mess.Tools[i].Function.Call != nil {
-					mess.Tools[i].Function.Call(mess, mess.Tools[i], val)
+				if i, ok := mess.ToolsMap[name.(string)]; ok && mess.Tools[i].Function.Call.Call != nil {
+					mess.Tools[i].Function.Call.Call(mess, mess.Tools[i], val)
 				}
 			}
 		}
 	}
 	for _, tool := range mess.Tools {
 		if tool.Function.CallUpdate != nil {
-			tool.Function.CallUpdate(&ret)
+			tool.Function.CallUpdate(tool, &ret)
 		}
 	}
 	return ret, err

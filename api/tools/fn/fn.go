@@ -33,6 +33,19 @@ func ReplyToUser() chat.Function {
 	}
 }
 
+// RequestReply 要求用户回答
+func RequestReply() chat.Function {
+	return chat.Function{
+		Name: "要求用户回答",
+		Parameters: []chat.Parameter{
+			{Type: "object", Properties: map[string]chat.Location{
+				"提问内容": chat.NewLocation("string", "要求用户回答的信息"),
+			}, Required: []string{"提问内容"}},
+		},
+		Description: "此工具为要求用户回答相关提问的内容",
+	}
+}
+
 // TaskList 任务列表
 func TaskList() chat.Function {
 	return chat.Function{
@@ -42,7 +55,7 @@ func TaskList() chat.Function {
 				"执行列表": chat.NewLocation("[]string", "对应执行工具名称列表"),
 			}, Required: []string{"执行列表"}},
 		},
-		Description: "生成的回答任务列表,本工具在每一次回复中调用用于规划之后如何进行工具调用.",
+		Description: "通过调用相关工具进行当前回答规划.",
 	}
 }
 
@@ -70,6 +83,6 @@ func BehaviorRegularization() chat.Function {
 
 // Call 绑定回调
 func Call(fn chat.Function, call func(mes *chat.Messages, tool *chat.Tool, args map[string]any)) chat.Function {
-	fn.Call = call
+	fn.Call.Call = call
 	return fn
 }
