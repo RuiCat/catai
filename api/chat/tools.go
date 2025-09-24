@@ -31,10 +31,21 @@ func (tool *Tool) Update() error {
 
 // Function 函数信息
 type Function struct {
-	Call        `json:"-"`  // 回调
-	Name        string      `json:"name"`        // 工具名
-	Parameters  []Parameter `json:"parameters"`  // 工具参数
-	Description string      `json:"description"` // 工具描述
+	Call        `json:"-"` // 回调
+	Name        string     `json:"name"`        // 工具名
+	Parameters  Parameters `json:"parameters"`  // 工具参数
+	Description string     `json:"description"` // 工具描述
+}
+
+// Parameters 处理
+type Parameters []Parameter
+
+type Comments struct {
+	Comments *[]Parameter `json:"_comments"`
+}
+
+func (parameters *Parameters) MarshalJSON() ([]byte, error) {
+	return json.Marshal(Comments{Comments: (*[]Parameter)(parameters)})
 }
 
 // Call 工具回调

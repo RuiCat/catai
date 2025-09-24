@@ -154,7 +154,7 @@ func (mes *Messages) Get() io.Reader {
 				break
 			}
 		}
-		mes.Buffer.AddDyte([]byte(`,"parallel_tool_calls":true`))
+		//	mes.Buffer.AddDyte([]byte(`,"parallel_tool_calls":true`))
 	}
 	if mes.IsJson {
 		mes.Buffer.AddDyte([]byte(`,"response_format":{"type": "json_object"}`))
